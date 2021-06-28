@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-(/images/image0(1).JPEG)
+![image1](/images/image0(1).JPEG)
 
 I am a second year student in University of Strathclyde, Glasgow. I have been enthusiastic on creating innovative software in the areas of AI, Java development, and Python development.
 I am currently working on a project that takes use of the Twitter API, processes certain posts with media, detects faces, and applies filters to them. Finally, the product is posted back on Twitter.
