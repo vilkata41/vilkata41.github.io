@@ -14,7 +14,7 @@ I am currently working on a project that takes use of the Twitter API, processes
 ![image2](/images/IMG_7587.jpg){:width="50%"}
 
 I wrote my first book when I was 17 and created a mini-game when I was 17 as well. When in university, I was interested in one of my tutors' proposals to start working on different projects that are out of the curriculum and that would help me for later.
-I am currently learning by practice.
+I am currently learning the different areas through practice.
 
 ### Contact me
 
