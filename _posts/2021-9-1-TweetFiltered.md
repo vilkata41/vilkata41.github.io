@@ -32,7 +32,7 @@ At first, we load our twitter account in the project, so we can access the data:
 
 ConfigurationBuilder configurationBuilder = new ConfigurationBuilder(); 		 // Set up the configuration builder
 		configurationBuilder.setDebugEnabled(true).setOAuthConsumerKey(ImportantConstants.CONSUMER_KEY) 	// For everything to work properly with Twitter's API
-						.setOAuthConsumerSecret(ImportantConstants.CONSUMER_SECRET)			 // We'd need the consumer key and secret AND
+						.setOAuthConsumerSecret(ImportantConstants.CONSUMER_SECRET)		// We'd need the consumer key and secret AND
 						.setOAuthAccessToken(ImportantConstants.ACCESS_TOKEN)			// The access token and secret.
 						.setOAuthAccessTokenSecret(ImportantConstants.TOKEN_SECRET);
 		
@@ -47,4 +47,34 @@ As one can notice, I've kept the twitter tokens into a separate class (there is 
 The second part of the tweetfiltered barebones Java project makes use of simple functions such as `getUser()`, `getName()`, `getText()`, `getMediaEntities()`, etc.<br><br>
 
 Being finished with this functionality meant that I was also done with part 1 of my entire project.<br><br>
+
+## My second goal
+
+The easiest (personal opinion, of course) part was over, things were about to get hot in there...<br><br>
+
+What I had to do now is just build on top of the barebones. Easy. Right? **Wrong!**<br>
+I had to use the functionality of my twitter information gathering application and build my own API with the help of [Java Spring Boot](https://spring.io/projects/spring-boot). After this was done, I just had to deploy it to a cloud service - more specifically, Google Cloud Platform and run the API in order for my third, and final part of the project to be doable.<br><br>
+
+I'll be completely honest... It didn't sound difficult at all. I just had to learn what Spring Boot was and upload it to that GCP. However, I faced a whole lot of unexpected problems when trying to figure it out on my own.<br>
+Learning Spring Boot was fine. Coding it was also fine. I read a couple of articles, watched some tutorials and it cleared up for me.<br><br>
+
+Thus, I coded it up...<br>
+I had a TweetFilteredAPIApplication that ran the whole API with the help of Spring Boot. My API was layered (sort of unnecessary for smaller projects like mine but really useful for larger projects) - I made a Base (functionality) layer, a Service layer, and a Controller layer. <br>
+The base layer consists of the Post class and the TwitterInfo class. The Post class makes it easy to access different posts from across the entire project and the TwitterInfo consists of the already covered barebones project *(with some modifications on it)*.<br><br>
+
+The Service layer feels unnecessary for my smaller project but I included it anyway. It drains the information from the base layer and later hands it to the Controller layer. That Controller layer maps the information to a specific page (with the `@RequestMapping` and `@GetMapping` annotations) and returns the results on that page.<br>
+To find more information regarding the coding side of the second part, feel free to check out [THIS](https://github.com/vilkata41/tweetfilteredAPI) repo.<br><br>
+
+This seemed fine so far... but when deploying time came, so did all my major problems with this project.<br>
+It was a little difficult for me to find relevant information for my case so I decided I'd learn on the fly. I consider this both a bad decision and a good decision. A bad decision for my nerves, and a good decision for my experience.<br><br>
+
+What made it difficult for me is having to learn most of the xml, maven, gcp file organisation, and some console programming.<br>
+I didn't understand much of any of these when I started but problems started coming one after the other. Right as I thought it was finally ready, another problem would appear and I'd have to deal with it.<br><br>
+
+Misunderstanding the difference between JAR files and WAR files was also a part of my problems.<br><br>
+
+However, a couple of days later I fixed my final problem with this and the API was fully functional and deployed to Google Cloud Platform's AppEngine.<br>
+You can check the `getPosts()` mapping [HERE](https://tweetfilteredrestapi.ey.r.appspot.com/api/tweetfilteredV1/all) and the `getRecent()` [HERE](https://tweetfilteredrestapi.ey.r.appspot.com/api/tweetfilteredV1/recent).<br><br>
+
+### My third goal
 
