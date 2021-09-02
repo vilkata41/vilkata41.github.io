@@ -48,7 +48,7 @@ The second part of the tweetfiltered barebones Java project makes use of simple 
 
 Being finished with this functionality meant that I was also done with part 1 of my entire project.<br><br>
 
-## My second goal
+### My second goal
 
 The easiest (personal opinion, of course) part was over, things were about to get hot in there...<br><br>
 
@@ -78,3 +78,104 @@ You can check the `getPosts()` mapping [HERE](https://tweetfilteredrestapi.ey.r.
 
 ### My third goal
 
+The final part of the TweetFiltered project consists of a python script, and a couple of folders (to store the original images and the filtered images). You can find the full repo [HERE](https://github.com/vilkata41/filterApplication). Now, I'll just cover the functionality of the script.<br><br>
+
+I start off by instantiating the API deployed to GCP and mediapipe (the face mesh library I used) drawing utils, and face mesh:<br>
+```
+    mp_drawing = mp.solutions.drawing_utils
+    mp_face_mesh = mp.solutions.face_mesh
+    api_all_url = "https://tweetfilteredrestapi.ey.r.appspot.com/api/tweetfilteredV1/all"
+    response = requests.get(api_all_url)
+```
+I, then extract all files (if there are any media files uploaded with the tweet, of course) and store them to `/imgs/` or `/vids/` folders, depending on the content.<br>
+
+```
+    for post in response.json():
+        if post['media'] is not None:
+            for m in post['media']:
+                IMAGE_URLS.append(m)
+
+    for img in IMAGE_URLS:
+        filename = img.split("/")[-1] # we get the name
+
+        r = requests.get(img, stream = True)
+
+        if r.status_code == 200 and not "?tag=12" in filename: # if it exists and is not a video (videos have ?tag=12 in the end)
+            filename = "imgs/" + filename
+            r.raw.decode_content = True
+	    
+# the file is written
+
+            with open(filename, 'wb') as f:
+                shutil.copyfileobj(r.raw, f)
+
+        elif r.status_code == 200 and "?tag=12" in filename: # else if it is a video
+            filename = "vids/" + filename.strip("?tag=12")
+            r.raw.decode_content = True
+	    
+# write the file in another folder
+
+            with open(filename, 'wb') as f:
+                shutil.copyfileobj(r.raw, f)
+
+        else:
+            print("problem")
+```
+
+I store the image paths into a list and then process that list by editing each picture that is on it. Firstly, I have a picture with all face landmarks. Secondly, I draw a rectangle around the face with the help of key facial landmarks on another picture. Lastly, I resize the filter and add it to the picture. All three product pictures are saved in the `/tmp/` folder of the project.<br>
+
+```
+# we draw dots on all face landmarks and save the final product as an annotated_image.
+        for face_landmarks in results.multi_face_landmarks:
+            print('face_landmarks:', face_landmarks)
+            mp_drawing.draw_landmarks(
+                image=annotated_image,
+                landmark_list=face_landmarks,
+                landmark_drawing_spec=DrawingSpec(color=(100, 100, 0), thickness=2, circle_radius=1)
+            )
+	    
+# more calculation code - you can check it in the full repo
+
+cv2.rectangle(square_image,
+                          pt1 = (left[0], int(top[1] * 0.9)), pt2 = (right[0], bot[1]),
+                          color = (255,0,255),
+                          thickness = 10
+                          )
+
+            ironman_filter = cv2.resize(ironman_filter, (filter_width, filter_height)) # the filter is resized according to the face details
+
+            x_offset = int(top_left[0])
+            y_offset = int(top_left[1])
+
+            y1, y2 = y_offset, y_offset + ironman_filter.shape[0]
+            x1, x2 = x_offset, x_offset + ironman_filter.shape[1]
+
+            alpha_s = ironman_filter[:, :, 3] / 255.0
+            alpha_l = 1.0 - alpha_s
+
+            for c in range(0, 3):
+                filtered_image[y1:y2, x1:x2, c] = (alpha_s * ironman_filter[:, :, c] + alpha_l * filtered_image[y1:y2, x1:x2, c]) # we overlay the filter
+```
+
+Finally, we use the opencv (cv2) to write the products in the tmp folder:
+```
+cv2.imwrite('tmp/annotated_image' + str(idx) + '.png', annotated_image)
+            cv2.imwrite('tmp/filtered_image' + str(idx) + '.png', filtered_image)
+            cv2.imwrite('tmp/square_image' + str(idx) + '.png', square_image)
+```
+
+This concludes the third, and last part of the TweetFiltered project i worked on for 2 months.<br><br>
+
+## Conclusions
+
+This summer project was a challenge for me, a yet-to-be second year university student.<br>
+There might have been a couple of difficulties and parts that may have frustrated me but my overall experience was great. I am extremely grateful that I had the opportunity to learn crucial sides of programming this early in my journey. Things that I'll likely learn in year 3 or 4 in university. I suppose I was lucky this summer, being given this project, and dealing with it on my own.<br><br>
+
+Of course, it wasn't completely on my own - we all shared our experiences, we got some help from our tutor. And honestly, I was on the brink of desperately asking someone for help but figured things out in the end.<br>
+While asking would've saved me a lot of time, I'm certainly glad that I figured the problems out on my own because that is one of the best ways to actually memorize the matter covered.<br><br>
+
+I am most definitely willing to work on another project like this. I believe I am ready for yet another challenge. Something to take me out of my comfort zone. Something to push me towards the improvement of my skills.<br><br>
+
+### Vilian P.<br><br>
+
+P.S. Thank you, Amine and the boys. You are some real ones!
